@@ -107,7 +107,7 @@ if check_password(st):
                     CONFIG.agent_fwd_cfg[i].pid = 0
                     write_config(CONFIG)
                     time.sleep(1)
-                    st.experimental_rerun()
+                    st.rerun()
 
                 stop = st.button(f"Stop {agent.alias}", type="primary")
                 if stop:
@@ -134,7 +134,7 @@ if check_password(st):
                 write_config(CONFIG)
                 time.sleep(2)
 
-                st.experimental_rerun()
+                st.rerun()
 
             try:
                 lines = st.slider(
