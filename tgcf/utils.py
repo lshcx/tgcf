@@ -46,6 +46,7 @@ async def send_message(
         return message
     tm.message.text = tm.text
     if tm.grouped_files:
+        logging.info(f"{len(grouped_files} files")
         return await client.send_message(recipient, tm.message, reply_to=tm.reply_to, file=tm.grouped_files)
     else:
         return await client.send_message(recipient, tm.message, reply_to=tm.reply_to)
