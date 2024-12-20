@@ -52,7 +52,6 @@ async def forward_job(agent_id: int) -> None:
             async for message in client.iter_messages(
                 src, reverse=True, offset_id=forward.offset
             ):
-                time.sleep(5)
                 message: Message
                 event = st.DummyEvent(message.chat_id, message.id)
                 event_uid = st.EventUid(event)
