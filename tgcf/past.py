@@ -84,7 +84,7 @@ async def forward_job(agent_id: int) -> None:
                         st.stored[event_uid].update({d: fwded_msg.id})
                     tm.clear()
                     tm = tm.get_next()
-                    last_id = message.id - 1
+                    last_id = message.id
                     logging.info(f"forwarding message with id = {last_id}")
                     forward.offset = last_id
                     write_config(CONFIG, persist=False)
