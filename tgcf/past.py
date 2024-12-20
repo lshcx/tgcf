@@ -52,6 +52,7 @@ async def forward_job(agent_id: int) -> None:
             async for message in client.iter_messages(
                 src, reverse=True, offset_id=forward.offset
             ):
+                time.sleep(5)
                 message: Message
                 event = st.DummyEvent(message.chat_id, message.id)
                 event_uid = st.EventUid(event)
@@ -68,6 +69,7 @@ async def forward_job(agent_id: int) -> None:
                         continue
                     if not tm.get_next():
                         continue
+                    message = tm.message
                     st.stored[event_uid] = {}
 
                     if message.is_reply:
