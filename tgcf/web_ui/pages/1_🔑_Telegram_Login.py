@@ -116,7 +116,7 @@ if check_password(st):
                         del CONFIG.login_cfg.agents[i]
                         del CONFIG.agent_fwd_cfg[i]
                         write_config(CONFIG)
-                        st.experimental_rerun()
+                        st.rerun()
                 else:
                     st.warning("This is the default agent and cannot be deleted!")
 
