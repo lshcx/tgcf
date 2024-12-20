@@ -166,12 +166,15 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
         if not new_tm:
             logging.info("Pre tm is None, return the tm.")
             return pre_tm
+        elif new_tm.grouped_id == -1:
+            logging.info("not a grouped msg")
+            pre_tm.set_next(new_tm)
         else:
             if new_tm.grouped_id == pre_tm.grouped_id:
                 logging.info(f"same grouped id, send as one media group, id {pre_tm.grouped_id}")
                 pre_tm.add_grouped_file(message)
             else:
-                new_tm.grouped_id(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
+                logging.info(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
                 pre_tm.set_next(new_tm)
             return pre_tm
 
