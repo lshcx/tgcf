@@ -48,6 +48,7 @@ async def forward_job(agent_id: int) -> None:
             last_id = 0
             forward: config.Forward
             logging.info(f"Forwarding messages from {src} to {dest}")
+            tm = None
             async for message in client.iter_messages(
                 src, reverse=True, offset_id=forward.offset
             ):
@@ -61,8 +62,11 @@ async def forward_job(agent_id: int) -> None:
                     continue
                 try:
 
-                    tm = await apply_plugins(pcfg_id, message)
+                    # tm = await apply_plugins(pcfg_id, message)
+                    tm = await apply_plugins_with_tm(pcfg_id, message, tm)
                     if not tm:
+                        continue
+                    if not tm.get_next():
                         continue
                     st.stored[event_uid] = {}
 
@@ -77,7 +81,8 @@ async def forward_job(agent_id: int) -> None:
                         fwded_msg = await send_message(agent_id, d, tm)
                         st.stored[event_uid].update({d: fwded_msg.id})
                     tm.clear()
-                    last_id = message.id
+                    tm = tm.get_next()
+                    last_id = message.id - 1
                     logging.info(f"forwarding message with id = {last_id}")
                     forward.offset = last_id
                     write_config(CONFIG, persist=False)
