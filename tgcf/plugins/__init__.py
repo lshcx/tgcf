@@ -30,6 +30,9 @@ class TgcfMessage:
         self.cleanup = False
         self.reply_to = None
         self.client = self.message.client
+        self.grouped_id = -1
+        self.grouped_files = []
+        self.next_tm = None
 
     async def get_file(self) -> str:
         """Downloads the file in the message and returns the path where its saved."""
@@ -38,6 +41,16 @@ class TgcfMessage:
         self.file = stamp(await self.message.download_media(""), self.sender_id)
         return self.file
 
+    def get_next():
+        if self.next_tm:
+            return self.next_tm
+
+    def set_next(tm):
+        self.next_tm = tm
+
+    def add_grouped_file(msg: Message):
+        self.grouped_files.append(msg)
+    
     def guess_file_type(self) -> FileType:
         for i in FileType:
             if i == FileType.NOFILE:
@@ -50,7 +63,8 @@ class TgcfMessage:
         if self.new_file and self.cleanup:
             cleanup(self.new_file)
             self.new_file = None
-
+        if self.grouped_files and self.cleanup:
+            self.grouped_files = []
 
 class TgcfPlugin:
     id_ = "plugin"
@@ -145,5 +159,18 @@ async def apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
                 return None
     return tm
 
+async def apply_plugins_with_tm(pcfg_id: int, message: Message, pre_tm: TgcfMessage) -> TgcfMessage | None:
+    new_tm = apply_plugins(pcfg_id, message)
+    if not pre_tm:
+        return new_tm
+    else:
+        if not new_tm:
+            return pre_tm
+        else:
+            if tm.grouped_id == pre_tm.grouped_id:
+                pre_tm.add_grouped_file(message)
+            else:
+                pre_tm.set_next(new_tm)
+            return pre_tm
 
 plugins = load_plugins()
