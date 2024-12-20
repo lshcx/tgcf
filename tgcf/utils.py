@@ -35,14 +35,20 @@ async def send_message(
     """Forward or send a copy, depending on config."""
     client: TelegramClient = tm.client
     if CONFIG.agent_fwd_cfg[agent_id].show_forwarded_from:
-        return await client.forward_messages(recipient, [tm.message] + tm.grouped_files)
+        if tm.grouped_files:
+            return await client.forward_messages(recipient, [tm.message] + tm.grouped_files)
+        else:
+            return await client.send_message(recipient, tm.message, reply_to=tm.reply_to)
     if tm.new_file:
         message = await client.send_file(
             recipient, tm.new_file, caption=tm.text, reply_to=tm.reply_to
         )
         return message
     tm.message.text = tm.text
-    return await client.send_message(recipient, tm.message, reply_to=tm.reply_to, file=tm.grouped_files)
+    if tm.grouped_files:
+        return await client.send_message(recipient, tm.message, reply_to=tm.reply_to, file=tm.grouped_files)
+    else:
+        return await client.send_message(recipient, tm.message, reply_to=tm.reply_to)
 
 
 def cleanup(*files: str) -> None:
