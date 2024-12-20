@@ -41,14 +41,14 @@ class TgcfMessage:
         self.file = stamp(await self.message.download_media(""), self.sender_id)
         return self.file
 
-    def get_next():
+    def get_next(self):
         if self.next_tm:
             return self.next_tm
 
-    def set_next(tm):
+    def set_next(self, tm):
         self.next_tm = tm
 
-    def add_grouped_file(msg: Message):
+    def add_grouped_file(self, msg: Message):
         self.grouped_files.append(msg)
     
     def guess_file_type(self) -> FileType:
