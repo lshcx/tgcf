@@ -30,7 +30,7 @@ class TgcfMessage:
         self.cleanup = False
         self.reply_to = None
         self.client = self.message.client
-        self.grouped_id = message.grouped_id if message else -1
+        self.grouped_id = message.grouped_id if message and message.grouped_id else -1
         self.grouped_files = []
         self.next_tm = None
 
@@ -42,8 +42,7 @@ class TgcfMessage:
         return self.file
 
     def get_next(self):
-        if self.next_tm:
-            return self.next_tm
+        return self.next_tm
 
     def set_next(self, tm):
         self.next_tm = tm
@@ -169,7 +168,7 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
             return pre_tm
         else:
             if new_tm.grouped_id == pre_tm.grouped_id:
-                logging.info(f"same grouped id, send as one media group")
+                logging.info(f"same grouped id, send as one media group, id {pre_tm.grouped_id}")
                 pre_tm.add_grouped_file(message)
             else:
                 new_tm.grouped_id(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
