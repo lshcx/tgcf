@@ -159,7 +159,7 @@ async def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
                 return None
     return tm
 
-async def apply_plugins_with(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage | None:
+async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage | None:
     new_tm = await _apply_plugins(pcfg_id, message)
     if not pre_tm:
         return new_tm
