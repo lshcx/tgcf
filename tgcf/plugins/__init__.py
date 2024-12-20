@@ -139,7 +139,7 @@ async def load_async_plugins() -> None:
                     logging.info(f"Plugin {_id} asynchronously loaded")
 
 
-def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
+async def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
     """Apply all loaded plugins to a message."""
     tm = TgcfMessage(message)
     pcfg = plugins[pcfg_id]
@@ -160,7 +160,7 @@ def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
     return tm
 
 async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage | None:
-    new_tm = _apply_plugins(pcfg_id, message)
+    new_tm = await _apply_plugins(pcfg_id, message)
     if not pre_tm:
         return new_tm
     else:
