@@ -161,11 +161,11 @@ async def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
 async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage | None:
     new_tm = await _apply_plugins(pcfg_id, message)
     if not pre_tm:
+        logging.info("Pre tm is None, return the tm.")
         return new_tm
     else:
         if not new_tm:
-            logging.info("Pre tm is None, return the tm.")
-            return pre_tm
+            logging.info("New tm is None, return the Pre tm.")
         elif new_tm.grouped_id == -1:
             logging.info("not a grouped msg")
             pre_tm.set_next(new_tm)
@@ -176,6 +176,6 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
             else:
                 logging.info(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
                 pre_tm.set_next(new_tm)
-            return pre_tm
+        return pre_tm
 
 plugins = load_plugins()
