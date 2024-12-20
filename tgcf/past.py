@@ -62,8 +62,8 @@ async def forward_job(agent_id: int) -> None:
                     continue
                 try:
 
-                    # tm = await apply_plugins(pcfg_id, message)
-                    tm = await apply_plugins_with_tm(pcfg_id, message, tm)
+                    tm = await apply_plugins(pcfg_id, message)
+                    # tm = await apply_plugins_with_tm(pcfg_id, message, tm)
                     if not tm:
                         continue
                     if not tm.get_next():
