@@ -30,7 +30,7 @@ class TgcfMessage:
         self.cleanup = False
         self.reply_to = None
         self.client = self.message.client
-        self.grouped_id = -1
+        self.grouped_id = message.grouped_id if message else -1
         self.grouped_files = []
         self.next_tm = None
 
