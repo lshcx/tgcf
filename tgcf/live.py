@@ -53,29 +53,32 @@ class EventHandler:
     
         dest = config.from_to.get(chat_id).get("dest")
         pcfg_id = config.from_to.get(chat_id).get("pcfg")
-    
-        self.tm = await apply_plugins(pcfg_id, message, self.tm)
-        if not self.tm:
-            return
-        if not self.tm.get_next():
-            return
-    
-        if event.is_reply:
-            r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
-            r_event_uid = st.EventUid(r_event)
-    
-        st.stored[event_uid] = {}
-        for d in dest:
-            if event.is_reply and r_event_uid in st.stored:
-                self.tm.reply_to = st.stored.get(r_event_uid).get(d)
-            fwded_msg = await send_message(current_agent, d, self.tm)
-            # if isinstance(fwded_msg, list):
-            #     for fm in fwded_msg:
-            #         st.stored[event_uid].update({d: fwded_msg})
-            # else:
-            #     st.stored[event_uid].update({d: fwded_msg})
-        tm.clear()
-        self.tm = self.tm.get_next()
+
+        try:
+            self.tm = await apply_plugins(pcfg_id, message, self.tm)
+            if not self.tm:
+                return
+            if not self.tm.get_next():
+                return
+        
+            if event.is_reply:
+                r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
+                r_event_uid = st.EventUid(r_event)
+        
+            st.stored[event_uid] = {}
+            for d in dest:
+                if event.is_reply and r_event_uid in st.stored:
+                    self.tm.reply_to = st.stored.get(r_event_uid).get(d)
+                fwded_msg = await send_message(current_agent, d, self.tm)
+                # if isinstance(fwded_msg, list):
+                #     for fm in fwded_msg:
+                #         st.stored[event_uid].update({d: fwded_msg})
+                # else:
+                #     st.stored[event_uid].update({d: fwded_msg})
+            tm.clear()
+            self.tm = self.tm.get_next()
+        except:
+            self.tm = None
     
     
     async def edited_message_handler(self, event) -> None:
