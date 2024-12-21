@@ -19,7 +19,7 @@ from tgcf.utils import clean_session_files, send_message
 current_agent: int = 0
 
 class EventHandler:
-    def __init__():
+    def __init__(self):
         self.tm = None
         self.ALL_EVENTS = {
     "new": (self.new_message_handler, events.NewMessage()),
@@ -169,7 +169,7 @@ async def start_sync(agent_id: int) -> None:
 
     await config.load_admins(client)
 
-    eh.update(command_events)
+    eh.update_events(command_events)
 
     for key, val in eh.get_all_events().items():
         if (
