@@ -143,6 +143,7 @@ async def start_sync(agent_id: int) -> None:
     clean_session_files()
     global current_agent
     current_agent = agent_id
+    logging.getLogger("telethon").setLevel(logging.WARNING)
 
     eh = EventHandler()
     # load async plugins defined in plugin_models
