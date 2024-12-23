@@ -21,6 +21,8 @@ current_agent: int = 0
 class EventHandler:
     def __init__(self):
         self.tm = {k: None for k in config.from_to.keys()}
+        for k, v in self.tm:
+            print(f"{k}: {v}")
         self.ALL_EVENTS = {
     "new": (self.new_message_handler, events.NewMessage()),
     # "edited": (self.edited_message_handler, events.MessageEdited()),
@@ -55,6 +57,9 @@ class EventHandler:
         pcfg_id = config.from_to.get(chat_id).get("pcfg")
 
         try:
+            print(config.from_to)
+            print(chat_id)
+            print(self.tm[chat_id])
             self.tm[chat_id] = await apply_plugins(pcfg_id, message, self.tm[chat_id])
             if not self.tm[chat_id]:
                 return
@@ -78,7 +83,7 @@ class EventHandler:
             self.tm[chat_id].clear()
             self.tm[chat_id] = self.tm[chat_id].get_next()
         except Exception as e:
-            logger.info("send message error {e}")
+            logging.info("send message error {e}")
             self.tm[chat_id] = None
     
     
