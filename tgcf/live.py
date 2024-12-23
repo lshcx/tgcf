@@ -34,7 +34,7 @@ class EventHandler:
     def update_events(self, command_events):
         self.ALL_EVENTS.update(command_events)
 
-    def __del__(self):
+    def finish(self):
         for chat_id in self.tm.keys():
             dest = config.from_to.get(chat_id).get("dest")
             pcfg_id = config.from_to.get(chat_id).get("pcfg")
