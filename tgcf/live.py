@@ -20,7 +20,7 @@ current_agent: int = 0
 
 class EventHandler:
     def __init__(self):
-        self.tm = None
+        self.tm = {k: None for k in config.from_to.keys()}
         self.ALL_EVENTS = {
     "new": (self.new_message_handler, events.NewMessage()),
     # "edited": (self.edited_message_handler, events.MessageEdited()),
@@ -41,44 +41,45 @@ class EventHandler:
         logging.info(f"New message received in {chat_id}")
         message = event.message
     
-        event_uid = st.EventUid(event)
+        # event_uid = st.EventUid(event)
     
-        length = len(st.stored)
-        exceeding = length - const.KEEP_LAST_MANY
+        # length = len(st.stored)
+        # exceeding = length - const.KEEP_LAST_MANY
     
-        if exceeding > 0:
-            for key in st.stored:
-                del st.stored[key]
-                break
+        # if exceeding > 0:
+        #     for key in st.stored:
+        #         del st.stored[key]
+        #         break
     
         dest = config.from_to.get(chat_id).get("dest")
         pcfg_id = config.from_to.get(chat_id).get("pcfg")
 
         try:
-            self.tm = await apply_plugins(pcfg_id, message, self.tm)
-            if not self.tm:
+            self.tm[chat_id] = await apply_plugins(pcfg_id, message, self.tm[chat_id])
+            if not self.tm[chat_id]:
                 return
-            if not self.tm.get_next():
+            if not self.tm[chat_id].get_next():
                 return
         
-            if event.is_reply:
-                r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
-                r_event_uid = st.EventUid(r_event)
+            # if event.is_reply:
+            #     r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
+            #     r_event_uid = st.EventUid(r_event)
         
             st.stored[event_uid] = {}
             for d in dest:
-                if event.is_reply and r_event_uid in st.stored:
-                    self.tm.reply_to = st.stored.get(r_event_uid).get(d)
-                fwded_msg = await send_message(current_agent, d, self.tm)
+                # if event.is_reply and r_event_uid in st.stored:
+                #     self.tm[chat_id].reply_to = st.stored.get(r_event_uid).get(d)
+                fwded_msg = await send_message(current_agent, d, self.tm[chat_id])
                 # if isinstance(fwded_msg, list):
                 #     for fm in fwded_msg:
                 #         st.stored[event_uid].update({d: fwded_msg})
                 # else:
                 #     st.stored[event_uid].update({d: fwded_msg})
-            tm.clear()
-            self.tm = self.tm.get_next()
-        except:
-            self.tm = None
+            self.tm[chat_id].clear()
+            self.tm[chat_id] = self.tm[chat_id].get_next()
+        except Exception as e:
+            logger.info("send message error {e}")
+            self.tm[chat_id] = None
     
     
     async def edited_message_handler(self, event) -> None:
