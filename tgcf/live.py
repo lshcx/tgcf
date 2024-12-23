@@ -57,9 +57,6 @@ class EventHandler:
         pcfg_id = config.from_to.get(chat_id).get("pcfg")
 
         try:
-            print(config.from_to)
-            print(chat_id)
-            print(self.tm[chat_id])
             self.tm[chat_id] = await apply_plugins(pcfg_id, message, self.tm[chat_id])
             if not self.tm[chat_id]:
                 return
@@ -70,7 +67,7 @@ class EventHandler:
             #     r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
             #     r_event_uid = st.EventUid(r_event)
         
-            st.stored[event_uid] = {}
+            # st.stored[event_uid] = {}
             for d in dest:
                 # if event.is_reply and r_event_uid in st.stored:
                 #     self.tm[chat_id].reply_to = st.stored.get(r_event_uid).get(d)
