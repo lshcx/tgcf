@@ -144,8 +144,7 @@ async def start_sync(agent_id: int) -> None:
     global current_agent
     current_agent = agent_id
     logging.getLogger("telethon").setLevel(logging.WARNING)
-
-    eh = EventHandler()
+    
     # load async plugins defined in plugin_models
     await load_async_plugins()
 
@@ -169,7 +168,7 @@ async def start_sync(agent_id: int) -> None:
     command_events = get_events()
 
     await config.load_admins(client)
-
+    eh = EventHandler()
     eh.update_events(command_events)
 
     for key, val in eh.get_all_events().items():
