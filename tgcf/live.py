@@ -33,6 +33,17 @@ class EventHandler:
 
     def update_events(self, command_events):
         self.ALL_EVENTS.update(command_events)
+
+    def __del__(self):
+        for chat_id in self.tm.keys():
+            dest = config.from_to.get(chat_id).get("dest")
+            pcfg_id = config.from_to.get(chat_id).get("pcfg")
+            if not self.tm[chat_id]:
+                return
+            for d in dest:
+                fwded_msg = await send_message(current_agent, d, self.tm[chat_id])
+            self.tm[chat_id].clear()
+            self.tm[chat_id] = self.tm[chat_id].get_next()
     
     async def new_message_handler(self, event: Union[Message, events.NewMessage]) -> None:
         """Process new incoming messages."""
