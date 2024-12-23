@@ -83,7 +83,7 @@ class EventHandler:
             self.tm[chat_id].clear()
             self.tm[chat_id] = self.tm[chat_id].get_next()
         except Exception as e:
-            logging.info("send message error {e}")
+            logging.info(f"send message error {e}")
             self.tm[chat_id] = None
     
     
