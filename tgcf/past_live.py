@@ -52,8 +52,6 @@ class ForwardJob:
             try:
 
                 tm = await apply_plugins(pcfg_id, message, tm)
-                if tm:
-                    logging.info(f"Current text is {tm.text}, and Next text is {tm.next_text}")
                 # tm = await apply_plugins_with_tm(pcfg_id, message, tm)
                 if not tm:
                     continue
