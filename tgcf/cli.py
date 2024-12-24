@@ -34,6 +34,7 @@ class Mode(str, Enum):
 
     PAST = "past"
     LIVE = "live"
+    BOTH = "both"
 
 
 def verbosity_callback(value: bool):
@@ -118,10 +119,13 @@ def main(
         from tgcf.past import forward_job  # pylint: disable=import-outside-toplevel
 
         asyncio.run(forward_job(agent_id))
-    else:
-        from tgcf.live import start_sync  # pylint: disable=import-outside-toplevel
-
+    elif mode == Mode.LIVE:
+        from tgcf.live import start_sync
         asyncio.run(start_sync(agent_id))
+    else:
+        from tgcf.past_live import ForwardJob
+        forward_job = ForwardJob()
+        asyncio.run(forward_job.run(agent_id))
 
 
 # AAHNIK 2023
