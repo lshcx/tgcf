@@ -83,7 +83,7 @@ class EventHandler:
                 return
             if not self.tm[chat_id].get_next():
                 return
-            if not self.tm[chat_id].get_message():
+            if not self.tm[chat_id].get_first_message():
                 return
         
             # if event.is_reply:
