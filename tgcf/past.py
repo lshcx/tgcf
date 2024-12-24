@@ -68,7 +68,7 @@ async def forward_job(agent_id: int) -> None:
                         continue
                     if not tm.get_next():
                         continue
-                    message = tm.message
+                    message = tm.get_first_message()
                     if message:
                         st.stored[event_uid] = {}
     
@@ -103,7 +103,7 @@ async def forward_job(agent_id: int) -> None:
             # process the last msg
             if tm:
                 st.stored[event_uid] = {}
-                message = tm.message
+                message = tm.get_first_message()
                 if message:
                     event = st.DummyEvent(message.chat_id, message.id)
                     event_uid = st.EventUid(event)
