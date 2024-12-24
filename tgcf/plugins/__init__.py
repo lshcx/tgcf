@@ -42,11 +42,11 @@ class TgcfMessage:
             raise FileNotFoundError("No file exists in this message.")
         self.file = stamp(await self.message.download_media(""), self.sender_id)
         return self.file
-    def get_last_id(self):
-        if self.grouped_files:
-            return self.grouped_files[-1].id
-        else:
-            return self.message.id
+    # def get_last_id(self):
+    #     if self.grouped_files:
+    #         return self.grouped_files[-1].id
+    #     else:
+    #         return self.message.id
     def get_last_id(self):
         return self.last_id
 
