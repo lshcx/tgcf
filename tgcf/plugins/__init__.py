@@ -31,10 +31,10 @@ class TgcfMessage:
         self.reply_to = None
         self.client = self.message.client
         self.grouped_id = message.grouped_id if message and message.grouped_id else -1
-        self.next_grouped_id = -1
         self.grouped_files = []
         self.next_tm = None
         self.next_text = ''
+        self.last_id = message.id
 
     async def get_file(self) -> str:
         """Downloads the file in the message and returns the path where its saved."""
@@ -47,6 +47,16 @@ class TgcfMessage:
             return self.grouped_files[-1].id
         else:
             return self.message.id
+    def get_last_id(self):
+        return self.last_id
+
+    def get_first_message(self):
+        if self.grouped_files:
+            return self.grouped_files[0]
+        elif self.message:
+            return self.message
+        else:
+            return None
         
     def get_next(self):
         return self.next_tm
@@ -215,10 +225,11 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
     new_tm = await _apply_plugins(pcfg_id, message)
     if not new_tm:
         if not message.grouped_id:
-            pass
+            pre_tm.last_id = message.id
         else:
             if message.grouped_id == pre_tm.grouped_id:
                 pre_tm.add_text(message.text)
+                pre_tm.last_id = message.id
             else:
                 new_tm = TgcfMessage(message)
                 new_tm.message = None
@@ -232,6 +243,7 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
                 logging.info(f"same grouped id, send as one media group, id {pre_tm.grouped_id}")
                 pre_tm.add_grouped_file(message)
                 pre_tm.add_text(new_tm.text)
+                pre_tm.last_id = message.id
             else:
                 logging.info(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
                 new_tm.add_grouped_file(message)
