@@ -69,28 +69,30 @@ async def forward_job(agent_id: int) -> None:
                     if not tm.get_next():
                         continue
                     message = tm.message
-                    st.stored[event_uid] = {}
-
-                    if message.is_reply:
-                        r_event = st.DummyEvent(
-                            message.chat_id, message.reply_to_msg_id
-                        )
-                        r_event_uid = st.EventUid(r_event)
-                    for d in dest:
-                        if message.is_reply and r_event_uid in st.stored:
-                            tm.reply_to = st.stored.get(r_event_uid).get(d)
-                        fwded_msg = await send_message(agent_id, d, tm)
+                    if message:
+                        st.stored[event_uid] = {}
+    
+                        if message.is_reply:
+                            r_event = st.DummyEvent(
+                                message.chat_id, message.reply_to_msg_id
+                            )
+                            r_event_uid = st.EventUid(r_event)
+                        for d in dest:
+                            if message.is_reply and r_event_uid in st.stored:
+                                tm.reply_to = st.stored.get(r_event_uid).get(d)
+                            fwded_msg = await send_message(agent_id, d, tm)
                         # st.stored[event_uid].update({d: fwded_msg.id})
-                    tm.clear()
-                    tm = tm.get_next()
-                    last_id = message.id
+                    
                     logging.info(f"forwarding message with id = {last_id}")
-                    forward.offset = last_id
+                    forward.offset = tm.get_last_id()
                     write_config(CONFIG, persist=False)
                     time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
                     logging.info(
                         f"slept for {CONFIG.agent_fwd_cfg[agent_id].past.delay} seconds"
                     )
+                    
+                    tm.clear()
+                    tm = tm.get_next()
 
                 except FloodWaitError as fwe:
                     logging.info(f"Sleeping for {fwe}")
@@ -102,24 +104,24 @@ async def forward_job(agent_id: int) -> None:
             if tm:
                 st.stored[event_uid] = {}
                 message = tm.message
-                event = st.DummyEvent(message.chat_id, message.id)
-                event_uid = st.EventUid(event)
-                if message.is_reply:
-                    r_event = st.DummyEvent(
-                        message.chat_id, message.reply_to_msg_id
-                    )
-                    r_event_uid = st.EventUid(r_event)
-                for d in dest:
-                    if message.is_reply and r_event_uid in st.stored:
-                        tm.reply_to = st.stored.get(r_event_uid).get(d)
-                    fwded_msg = await send_message(agent_id, d, tm)
-                    # st.stored[event_uid].update({d: fwded_msg.id})
-                tm.clear()
-                last_id = message.id
+                if message:
+                    event = st.DummyEvent(message.chat_id, message.id)
+                    event_uid = st.EventUid(event)
+                    if message.is_reply:
+                        r_event = st.DummyEvent(
+                            message.chat_id, message.reply_to_msg_id
+                        )
+                        r_event_uid = st.EventUid(r_event)
+                    for d in dest:
+                        if message.is_reply and r_event_uid in st.stored:
+                            tm.reply_to = st.stored.get(r_event_uid).get(d)
+                        fwded_msg = await send_message(agent_id, d, tm)
+                        # st.stored[event_uid].update({d: fwded_msg.id})
                 logging.info(f"forwarding message with id = {last_id}")
-                forward.offset = last_id
+                forward.offset = tm.get_last_id()
                 write_config(CONFIG, persist=False)
                 time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
                 logging.info(
                     f"slept for {CONFIG.agent_fwd_cfg[agent_id].past.delay} seconds"
                 )
+                tm.clear()
