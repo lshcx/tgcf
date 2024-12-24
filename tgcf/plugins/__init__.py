@@ -221,6 +221,7 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
                 pre_tm.add_text(message.text)
             else:
                 new_tm = TgcfMessage(message)
+                new_tm.message = None
                 pre_tm.set_next(new_tm)
     else:
         if new_tm.grouped_id == -1:
