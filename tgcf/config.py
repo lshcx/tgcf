@@ -222,7 +222,7 @@ async def load_working_forwards(agent_id: int, forwards: List[Forward], chat_id)
         logging.error("Error: More than one forward matched!")
         return None
     else:
-        return active_forwards[0]
+        return working_forwards[0]
 
 
 async def load_from_to(
