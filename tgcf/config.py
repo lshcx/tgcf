@@ -205,6 +205,26 @@ async def load_active_forwards(agent_id: int, forwards: List[Forward]) -> List[F
     return active_forwards
 
 
+async def load_working_forwards(agent_id: int, forwards: List[Forward], chat_id) -> Forward | None:
+    working_forwards: List[Forward] = []
+    for forward in forwards:
+        if forward.agent != agent_id:
+            continue
+        if not forward.use_this:
+            continue
+        if chat_id != forward.source:
+            continue
+        working_forwards.append(forward)
+    if len(working_forwards) == 0:
+        logging.error("Error: Not forward matched!")
+        return None
+    elif len(working_forwards) > 1:
+        logging.error("Error: More than one forward matched!")
+        return None
+    else:
+        return active_forwards[0]
+
+
 async def load_from_to(
     agent_id: int,
     client: TelegramClient,
