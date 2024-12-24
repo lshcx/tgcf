@@ -56,7 +56,6 @@ class EventHandler:
     async def new_message_handler(self, event: Union[Message, events.NewMessage]) -> None:
         """Process new incoming messages."""
         chat_id = event.chat_id
-        logging.info(f"****chat id is {chat_id}")
         if chat_id not in self.from_to:
             return
         logging.info(f"New message received in {chat_id}")
