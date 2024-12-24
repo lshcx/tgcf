@@ -83,23 +83,23 @@ class EventHandler:
                 return
             if not self.tm[chat_id].get_next():
                 return
+            
             if not self.tm[chat_id].get_first_message():
-                return
         
-            # if event.is_reply:
-            #     r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
-            #     r_event_uid = st.EventUid(r_event)
-        
-            # st.stored[event_uid] = {}
-            for d in dest:
-                # if event.is_reply and r_event_uid in st.stored:
-                #     self.tm[chat_id].reply_to = st.stored.get(r_event_uid).get(d)
-                fwded_msg = await send_message(self.agent_id, d, self.tm[chat_id])
-                # if isinstance(fwded_msg, list):
-                #     for fm in fwded_msg:
-                #         st.stored[event_uid].update({d: fwded_msg})
-                # else:
-                #     st.stored[event_uid].update({d: fwded_msg})
+                # if event.is_reply:
+                #     r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
+                #     r_event_uid = st.EventUid(r_event)
+            
+                # st.stored[event_uid] = {}
+                for d in dest:
+                    # if event.is_reply and r_event_uid in st.stored:
+                    #     self.tm[chat_id].reply_to = st.stored.get(r_event_uid).get(d)
+                    fwded_msg = await send_message(self.agent_id, d, self.tm[chat_id])
+                    # if isinstance(fwded_msg, list):
+                    #     for fm in fwded_msg:
+                    #         st.stored[event_uid].update({d: fwded_msg})
+                    # else:
+                    #     st.stored[event_uid].update({d: fwded_msg})
             if working_forwards:
                 working_forwards.offset = self.tm[chat_id].get_last_id()
                 write_config(CONFIG, persist=False)
