@@ -53,8 +53,8 @@ class TgcfMessage:
     def set_next(self, tm):
         self.next_tm = tm
 
-    def set_next_text(self, text):
-        self.next_text = text
+    def add_next_text(self, text):
+        self.next_text += text
 
     def add_grouped_file(self, msg: Message):
         self.grouped_files.append(msg)
@@ -176,7 +176,7 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
         if not new_tm:
             new_id = message.grouped_id if message and message.grouped_id else -1
             if new_id > 0 and new_id != pre_tm.grouped_id:
-                pre_tm.set_next_text(message.text)
+                pre_tm.add_next_text(message.text)
             logging.info("New tm is None, return the Pre tm.")
         elif new_tm.grouped_id == -1:
             logging.info("not a grouped msg")
@@ -185,6 +185,7 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
             if new_tm.grouped_id == pre_tm.grouped_id:
                 logging.info(f"same grouped id, send as one media group, id {pre_tm.grouped_id}")
                 pre_tm.add_grouped_file(message)
+                pre_tm.add_next_text(message.text)
             else:
                 logging.info(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
                 pre_tm.set_next(new_tm)
