@@ -82,9 +82,9 @@ async def forward_job(agent_id: int) -> None:
                                 tm.reply_to = st.stored.get(r_event_uid).get(d)
                             fwded_msg = await send_message(agent_id, d, tm)
                         # st.stored[event_uid].update({d: fwded_msg.id})
-                    
-                    logging.info(f"forwarding message with id = {last_id}")
+
                     forward.offset = tm.get_last_id()
+                    logging.info(f"forwarding message with id = {forward.offset}")
                     write_config(CONFIG, persist=False)
                     time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
                     logging.info(
@@ -117,8 +117,9 @@ async def forward_job(agent_id: int) -> None:
                             tm.reply_to = st.stored.get(r_event_uid).get(d)
                         fwded_msg = await send_message(agent_id, d, tm)
                         # st.stored[event_uid].update({d: fwded_msg.id})
-                logging.info(f"forwarding message with id = {last_id}")
+                
                 forward.offset = tm.get_last_id()
+                logging.info(f"forwarding message with id = {forward.offset}")
                 write_config(CONFIG, persist=False)
                 time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
                 logging.info(
