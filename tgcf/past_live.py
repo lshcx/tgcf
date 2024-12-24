@@ -126,9 +126,9 @@ class ForwardJob:
             return
         src, destV = from_to
         retry_count = 5
-        processed_count = self.forward_past_one_iter(agent_id, src, forward, destV)
+        processed_count = await self.forward_past_one_iter(agent_id, src, forward, destV)
         while retry_count > 0 and processed_count > 0:
-            processed_count = self.forward_past_one_iter(agent_id, src, forward, destV)
+            processed_count = await self.forward_past_one_iter(agent_id, src, forward, destV)
             retry_count -= 1
 
     async def start_sync(self, agent_id: int) -> None:
