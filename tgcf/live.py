@@ -63,7 +63,9 @@ class EventHandler:
         #     for key in st.stored:
         #         del st.stored[key]
         #         break
-    
+        working_forwards = await config.load_working_forwards(
+            agent_id, config.CONFIG.forwards, chat_id
+        )
         dest = config.from_to.get(chat_id).get("dest")
         pcfg_id = config.from_to.get(chat_id).get("pcfg")
 
@@ -88,8 +90,11 @@ class EventHandler:
                 #         st.stored[event_uid].update({d: fwded_msg})
                 # else:
                 #     st.stored[event_uid].update({d: fwded_msg})
+            forward.offset = self.tm[chat_id].get_last_id()
+            write_config(CONFIG, persist=False)
             self.tm[chat_id].clear()
             self.tm[chat_id] = self.tm[chat_id].get_next()
+            
         except Exception as e:
             logging.info(f"send message error {e}")
             self.tm[chat_id] = None
