@@ -54,6 +54,9 @@ class TgcfMessage:
     def set_next(self, tm):
         self.next_tm = tm
 
+    def add_text(self, text):
+        self.text += text
+
     def set_next_text(self, text):
         self.next_text = text
 
@@ -171,38 +174,65 @@ async def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
                 return None
     return tm
 
-async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage | None:
-    new_tm = await _apply_plugins(pcfg_id, message)
-    if not pre_tm:
-        logging.info("Pre tm is None, return the tm.")
-        return new_tm
-    else:
-        if not new_tm:
-            new_id = message.grouped_id if message and message.grouped_id else -1
-            if new_id > 0:
-                if new_id == pre_tm.grouped_id:
-                    pre_tm.text += message.text
-                else:
-                    if new_id == pre_tm.next_grouped_id:
-                        pre_tm.add_next_text(message.text)
-                    else:
-                        pre_tm.set_next_text(message.text)
-                        pre_tm.next_grouped_id = new_id
+# async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage | None:
+#     new_tm = await _apply_plugins(pcfg_id, message)
+#     if not pre_tm:
+#         logging.info("Pre tm is None, return the tm.")
+#         return new_tm
+#     else:
+#         if not new_tm:
+#             new_id = message.grouped_id if message and message.grouped_id else -1
+#             if new_id > 0:
+#                 if new_id == pre_tm.grouped_id:
+#                     pre_tm.text += message.text
+#                 else:
+#                     if new_id == pre_tm.next_grouped_id:
+#                         pre_tm.add_next_text(message.text)
+#                     else:
+#                         pre_tm.set_next_text(message.text)
+#                         pre_tm.next_grouped_id = new_id
                     
-            logging.info("New tm is None, return the Pre tm.")
-        elif new_tm.grouped_id == -1:
+#             logging.info("New tm is None, return the Pre tm.")
+#         elif new_tm.grouped_id == -1:
+#             logging.info("not a grouped msg")
+#             pre_tm.set_next(new_tm)
+#         else:
+#             if new_tm.grouped_id == pre_tm.grouped_id:
+#                 logging.info(f"same grouped id, send as one media group, id {pre_tm.grouped_id}")
+#                 pre_tm.add_grouped_file(message)
+#                 pre_tm.add_next_text(message.text)
+#             else:
+#                 logging.info(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
+#                 pre_tm.set_next(new_tm)
+#                 if pre_tm.next_text:
+#                     new_tm.text = pre_tm.next_text
+#         return pre_tm
+async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage:
+    pre_tm = pre_tm if pre_tm else TgcfMessage(message)
+    new_tm = await _apply_plugins(pcfg_id, message)
+    if not new_tm:
+        if not message.grouped_id:
+            pass
+        else:
+            if message.grouped_id == pre_tm.grouped_id:
+                pre_tm.add_text(message.text)
+            else:
+                new_tm = TgcfMessage(message)
+                pre_tm.set_next(new_tm)
+    else:
+        if new_tm.grouped_id == -1:
             logging.info("not a grouped msg")
             pre_tm.set_next(new_tm)
         else:
             if new_tm.grouped_id == pre_tm.grouped_id:
                 logging.info(f"same grouped id, send as one media group, id {pre_tm.grouped_id}")
                 pre_tm.add_grouped_file(message)
-                pre_tm.add_next_text(message.text)
+                pre_tm.add_text(new_tm.text)
             else:
                 logging.info(f"old grouped id is {pre_tm.grouped_id}, and new grouped id is {new_tm.grouped_id}, set next")
+                new_tm.add_grouped_file(message)
                 pre_tm.set_next(new_tm)
-                if pre_tm.next_text:
-                    new_tm.text = pre_tm.next_text
-        return pre_tm
-
+    return pre_tm
+    
+        
 plugins = load_plugins()
