@@ -53,6 +53,9 @@ class TgcfMessage:
     def set_next(self, tm):
         self.next_tm = tm
 
+    def set_next_text(self, text):
+        self.next_text = text
+
     def add_next_text(self, text):
         self.next_text += text
 
@@ -176,7 +179,7 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
         if not new_tm:
             new_id = message.grouped_id if message and message.grouped_id else -1
             if new_id > 0 and new_id != pre_tm.grouped_id:
-                pre_tm.add_next_text(message.text)
+                pre_tm.set_next_text(message.text)
             logging.info("New tm is None, return the Pre tm.")
         elif new_tm.grouped_id == -1:
             logging.info("not a grouped msg")
