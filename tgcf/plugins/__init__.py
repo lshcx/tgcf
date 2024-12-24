@@ -31,6 +31,7 @@ class TgcfMessage:
         self.reply_to = None
         self.client = self.message.client
         self.grouped_id = message.grouped_id if message and message.grouped_id else -1
+        self.next_grouped_id = -1
         self.grouped_files = []
         self.next_tm = None
         self.next_text = ''
@@ -179,7 +180,11 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
         if not new_tm:
             new_id = message.grouped_id if message and message.grouped_id else -1
             if new_id > 0 and new_id != pre_tm.grouped_id:
-                pre_tm.set_next_text(message.text)
+                if new_id != pre_tm.next_grouped_id:
+                    pre_tm.set_next_text(message.text)
+                    pre_tm.next_grouped_id = new_id
+                else:
+                    pre_tm.add_next_text(message.text)
             logging.info("New tm is None, return the Pre tm.")
         elif new_tm.grouped_id == -1:
             logging.info("not a grouped msg")
