@@ -208,7 +208,10 @@ async def _apply_plugins(pcfg_id: int, message: Message) -> TgcfMessage | None:
 #                     new_tm.text = pre_tm.next_text
 #         return pre_tm
 async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | None = None) -> TgcfMessage:
-    pre_tm = pre_tm if pre_tm else TgcfMessage(message)
+    if not pre_tm:
+        pre_tm = TgcfMessage(message)
+        pre_tm.message = None
+
     new_tm = await _apply_plugins(pcfg_id, message)
     if not new_tm:
         if not message.grouped_id:
