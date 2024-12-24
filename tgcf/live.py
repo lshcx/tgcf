@@ -90,8 +90,9 @@ class EventHandler:
                 #         st.stored[event_uid].update({d: fwded_msg})
                 # else:
                 #     st.stored[event_uid].update({d: fwded_msg})
-            forward.offset = self.tm[chat_id].get_last_id()
-            write_config(CONFIG, persist=False)
+            if working_forwards:
+                working_forwards.offset = self.tm[chat_id].get_last_id()
+                write_config(CONFIG, persist=False)
             self.tm[chat_id].clear()
             self.tm[chat_id] = self.tm[chat_id].get_next()
             
