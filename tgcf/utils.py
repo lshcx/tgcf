@@ -36,9 +36,9 @@ async def send_message(
     client: TelegramClient = tm.client
     if CONFIG.agent_fwd_cfg[agent_id].show_forwarded_from:
         if tm.grouped_files:
-            return await client.forward_messages(recipient, [tm.message] + tm.grouped_files)
+            return await client.forward_messages(recipient, tm.grouped_files)
         else:
-            return await client.send_message(recipient, tm.message, reply_to=tm.reply_to)
+            return await client.forward_messages(recipient, tm.message)
     if tm.new_file:
         message = await client.send_file(
             recipient, tm.new_file, caption=tm.text, reply_to=tm.reply_to
@@ -47,10 +47,11 @@ async def send_message(
     
     if tm.grouped_files:
         logging.info(f"{len(tm.grouped_files)} files")
-        return await client.send_message(recipient, tm.text, reply_to=tm.reply_to, file=[tm.message]+tm.grouped_files)
+        return await client.send_message(recipient, tm.text, reply_to=tm.reply_to, file=tm.grouped_files)
     else:
-        tm.message.text = tm.text
-        return await client.send_message(recipient, tm.message, reply_to=tm.reply_to)
+        if tm.message:
+            tm.message.text = tm.text
+            return await client.send_message(recipient, tm.message, reply_to=tm.reply_to)
 
 
 def cleanup(*files: str) -> None:
