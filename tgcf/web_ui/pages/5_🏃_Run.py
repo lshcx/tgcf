@@ -66,12 +66,29 @@ if check_password(st):
                 )
                 mode = st.radio(
                     "Choose mode",
-                    ["live", "past"],
+                    ["live", "past", "both"],
                     index=agent_fc.mode,
                     key=f"mode {i}",
                 )
                 if mode == "past":
                     agent_fc.mode = 1
+                    st.warning(
+                        "Only User Account can be used in Past mode. Telegram does not allow bot account to go through history of a chat!"
+                    )
+                    agent_fc.past.delay = st.slider(
+                        "Delay in seconds",
+                        0,
+                        100,
+                        value=agent_fc.past.delay,
+                        key=f"delay {i}",
+                    )
+                elif mode == "both":
+                    agent_fc.mode = 2
+                    agent_fc.live.delete_sync = st.checkbox(
+                        "Sync when a message is deleted",
+                        value=agent_fc.live.delete_sync,
+                        key=f"del sync {i}",
+                    )
                     st.warning(
                         "Only User Account can be used in Past mode. Telegram does not allow bot account to go through history of a chat!"
                     )
