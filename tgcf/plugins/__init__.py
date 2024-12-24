@@ -179,12 +179,16 @@ async def apply_plugins(pcfg_id: int, message: Message, pre_tm: TgcfMessage | No
     else:
         if not new_tm:
             new_id = message.grouped_id if message and message.grouped_id else -1
-            if new_id > 0 and new_id != pre_tm.next_grouped_id:
-                if new_id != pre_tm.grouped_id:
-                    pre_tm.set_next_text(message.text)
-                    pre_tm.next_grouped_id = new_id
+            if new_id > 0:
+                if new_id == pre_tm.grouped_id:
+                    pre_tm.text += message.text
                 else:
-                    pre_tm.add_next_text(message.text)
+                    if new_id == pre_tm.next_grouped_id:
+                        pre_tm.add_next_text(message.text)
+                    else:
+                        pre_tm.set_next_text(message.text)
+                        pre_tm.next_grouped_id = new_id
+                    
             logging.info("New tm is None, return the Pre tm.")
         elif new_tm.grouped_id == -1:
             logging.info("not a grouped msg")
