@@ -86,7 +86,8 @@ async def forward_job(agent_id: int) -> None:
                     forward.offset = tm.get_last_id()
                     logging.info(f"forwarding message with id = {forward.offset}")
                     write_config(CONFIG, persist=False)
-                    time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
+                    if message:
+                        time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
                     logging.info(
                         f"slept for {CONFIG.agent_fwd_cfg[agent_id].past.delay} seconds"
                     )
@@ -121,7 +122,8 @@ async def forward_job(agent_id: int) -> None:
                 forward.offset = tm.get_last_id()
                 logging.info(f"forwarding message with id = {forward.offset}")
                 write_config(CONFIG, persist=False)
-                time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
+                if message:
+                    time.sleep(CONFIG.agent_fwd_cfg[agent_id].past.delay)
                 logging.info(
                     f"slept for {CONFIG.agent_fwd_cfg[agent_id].past.delay} seconds"
                 )
