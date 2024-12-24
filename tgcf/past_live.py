@@ -193,6 +193,8 @@ class ForwardJob:
         for from_to, forward in zip(config.from_to.items(), active_forwards):
             src, destV = from_to
             await self.forward_past(agent_id, from_to, forward)
+            logging.info(f"Past mode Finished forwarding from {src} to {destV['dest']}")
+            logging.info(f"Starting live mode for {src} to {destV['dest']}")
             if self.ehs.get(agent_id):
                 self.ehs[agent_id].update_from_to({src: destV})
         
