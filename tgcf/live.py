@@ -83,6 +83,8 @@ class EventHandler:
                 return
             if not self.tm[chat_id].get_next():
                 return
+            if not self.tm[chat_id].get_message():
+                return
         
             # if event.is_reply:
             #     r_event = st.DummyEvent(chat_id, event.reply_to_msg_id)
